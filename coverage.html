@@ -1,0 +1,1491 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>lab3-go: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">lab3-go/array.go (96.8%)</option>
+				
+				<option value="file1">lab3-go/cbt.go (95.2%)</option>
+				
+				<option value="file2">lab3-go/cuckoo.go (90.2%)</option>
+				
+				<option value="file3">lab3-go/dlist.go (86.8%)</option>
+				
+				<option value="file4">lab3-go/hashtable.go (100.0%)</option>
+				
+				<option value="file5">lab3-go/main.go (60.8%)</option>
+				
+				<option value="file6">lab3-go/queue.go (100.0%)</option>
+				
+				<option value="file7">lab3-go/slist.go (92.4%)</option>
+				
+				<option value="file8">lab3-go/stack.go (100.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package main
+
+import (
+        "encoding/gob"
+        "encoding/json"
+        "fmt"
+        "os"
+)
+
+type Array struct {
+        Data []string `json:"data"`
+}
+
+// Конструктор
+func NewArray() *Array <span class="cov8" title="1">{
+        return &amp;Array{Data: []string{}}
+}</span>
+
+// Добавить в конец
+func (a *Array) PushBack(val string) <span class="cov8" title="1">{
+        a.Data = append(a.Data, val)
+}</span>
+
+// Вставить по индексу (аналог insertAt)
+func (a *Array) InsertAt(index int, val string) <span class="cov8" title="1">{
+        if index &lt; 0 || index &gt; len(a.Data) </span><span class="cov0" title="0">{
+                return
+        }</span>
+        // Вставляем элемент в середину через срезы
+        <span class="cov8" title="1">a.Data = append(a.Data[:index], append([]string{val}, a.Data[index:]...)...)</span>
+}
+
+// Получить по индексу
+func (a *Array) Get(index int) string <span class="cov8" title="1">{
+        if index &lt; 0 || index &gt;= len(a.Data) </span><span class="cov8" title="1">{
+                return ""
+        }</span>
+        <span class="cov8" title="1">return a.Data[index]</span>
+}
+
+// Заменить по индексу
+func (a *Array) Set(index int, val string) <span class="cov8" title="1">{
+        if index &gt;= 0 &amp;&amp; index &lt; len(a.Data) </span><span class="cov8" title="1">{
+                a.Data[index] = val
+        }</span>
+}
+
+// Удалить по индексу
+func (a *Array) RemoveAt(index int) <span class="cov8" title="1">{
+        if index &gt;= 0 &amp;&amp; index &lt; len(a.Data) </span><span class="cov8" title="1">{
+                a.Data = append(a.Data[:index], a.Data[index+1:]...)
+        }</span>
+}
+
+// Длина
+func (a *Array) Length() int <span class="cov8" title="1">{
+        return len(a.Data)
+}</span>
+
+// Очистить
+func (a *Array) Clear() <span class="cov8" title="1">{
+        a.Data = []string{}
+}</span>
+
+// Печать
+func (a *Array) Print() <span class="cov8" title="1">{
+        fmt.Println(a.Data)
+}</span>
+
+// Сохранение (JSON)
+func (a *Array) SaveToFile(filename string) error <span class="cov8" title="1">{
+        data, _ := json.MarshalIndent(a, "", "    ")
+        return os.WriteFile(filename, data, 0644)
+}</span>
+
+// Загрузка (JSON)
+func (a *Array) LoadFromFile(filename string) error <span class="cov8" title="1">{
+        data, err := os.ReadFile(filename)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">return json.Unmarshal(data, a)</span>
+}
+
+// Бинарное сохранение (Gob)
+func (a *Array) SaveToBinary(filename string) error <span class="cov8" title="1">{
+        file, _ := os.Create(filename)
+        defer file.Close()
+        encoder := gob.NewEncoder(file)
+        return encoder.Encode(a)
+}</span>
+
+// Бинарная загрузка (Gob)
+func (a *Array) LoadFromBinary(filename string) error <span class="cov8" title="1">{
+        file, err := os.Open(filename)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">defer file.Close()
+        decoder := gob.NewDecoder(file)
+        return decoder.Decode(a)</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package main
+
+import (
+        "encoding/gob"
+        "encoding/json"
+        "fmt"
+        "os"
+)
+
+type TNode struct {
+        Data  string `json:"data"`
+        Left  *TNode `json:"left"`
+        Right *TNode `json:"right"`
+}
+
+type CBT struct {
+        Root  *TNode `json:"root"`
+        Count int    `json:"count"`
+}
+
+// Конструктор
+func NewCBT() *CBT <span class="cov8" title="1">{
+        return &amp;CBT{}
+}</span>
+
+// Вспомогательный метод: поиск узла по индексу
+func (t *CBT) getNodeByIndex(node *TNode, currentIndex, targetIndex int) *TNode <span class="cov8" title="1">{
+        if node == nil </span><span class="cov0" title="0">{
+                return nil
+        }</span>
+        <span class="cov8" title="1">if currentIndex == targetIndex </span><span class="cov8" title="1">{
+                return node
+        }</span>
+        // Ищем в левом поддереве
+        <span class="cov8" title="1">leftRes := t.getNodeByIndex(node.Left, 2*currentIndex+1, targetIndex)
+        if leftRes != nil </span><span class="cov8" title="1">{
+                return leftRes
+        }</span>
+        // Если слева нет, ищем в правом
+        <span class="cov0" title="0">return t.getNodeByIndex(node.Right, 2*currentIndex+2, targetIndex)</span>
+}
+
+// Вставка нового элемента
+func (t *CBT) Insert(val string) <span class="cov8" title="1">{
+        newNode := &amp;TNode{Data: val}
+        if t.Count == 0 </span><span class="cov8" title="1">{
+                t.Root = newNode
+                t.Count = 1
+                return
+        }</span>
+        <span class="cov8" title="1">newIndex := t.Count
+        parentIndex := (newIndex - 1) / 2
+        isLeft := (newIndex%2 == 1)
+        parent := t.getNodeByIndex(t.Root, 0, parentIndex)
+
+        if isLeft </span><span class="cov8" title="1">{
+                parent.Left = newNode
+        }</span> else<span class="cov8" title="1"> {
+                parent.Right = newNode
+        }</span>
+        <span class="cov8" title="1">t.Count++</span>
+}
+
+// Проверка на Complete
+func (t *CBT) IsComplete() bool <span class="cov8" title="1">{
+        if t.Root == nil </span><span class="cov8" title="1">{
+                return true
+        }</span>
+
+        // Используем массив как очередь
+        <span class="cov8" title="1">queue := make([]*TNode, 0)
+        queue = append(queue, t.Root)
+        seenNull := false
+
+        for len(queue) &gt; 0 </span><span class="cov8" title="1">{
+                curr := queue[0]
+                queue = queue[1:] // Dequeue
+
+                if curr != nil </span><span class="cov8" title="1">{
+                        if seenNull </span><span class="cov0" title="0">{
+                                return false // Нашли узел после пустоты
+                        }</span>
+                        <span class="cov8" title="1">queue = append(queue, curr.Left)
+                        queue = append(queue, curr.Right)</span>
+                } else<span class="cov8" title="1"> {
+                        seenNull = true
+                }</span>
+        }
+        <span class="cov8" title="1">return true</span>
+}
+
+// Размер дерева
+func (t *CBT) Size() int <span class="cov8" title="1">{
+        return t.Count
+}</span>
+
+// Вспомогательный метод для очистки
+func (t *CBT) clearRecursive(node *TNode) <span class="cov8" title="1">{
+        if node == nil </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">t.clearRecursive(node.Left)
+        t.clearRecursive(node.Right)
+        node = nil</span>
+}
+
+// Очистка
+func (t *CBT) Clear() <span class="cov8" title="1">{
+        t.clearRecursive(t.Root)
+        t.Root = nil
+        t.Count = 0
+}</span>
+
+// Вспомогательный метод для печати
+func (t *CBT) printRecursive(node *TNode, prefix string, isLast bool) <span class="cov8" title="1">{
+        if node == nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov8" title="1">fmt.Printf("%s", prefix)
+        if isLast </span><span class="cov8" title="1">{
+                fmt.Print("+-- ")
+        }</span> else<span class="cov8" title="1"> {
+                fmt.Print("|-- ")
+        }</span>
+        <span class="cov8" title="1">fmt.Println(node.Data)
+
+        newPrefix := prefix
+        if isLast </span><span class="cov8" title="1">{
+                newPrefix += "    "
+        }</span> else<span class="cov8" title="1"> {
+                newPrefix += "|   "
+        }</span>
+
+        <span class="cov8" title="1">hasL := node.Left != nil
+        hasR := node.Right != nil
+        if hasL </span><span class="cov8" title="1">{
+                t.printRecursive(node.Left, newPrefix, !hasR)
+        }</span>
+        <span class="cov8" title="1">if hasR </span><span class="cov8" title="1">{
+                t.printRecursive(node.Right, newPrefix, true)
+        }</span>
+}
+
+// Печать дерева
+func (t *CBT) Print() <span class="cov8" title="1">{
+        if t.Root == nil </span><span class="cov8" title="1">{
+                fmt.Println("(дерево пусто)")
+                return
+        }</span>
+        <span class="cov8" title="1">t.printRecursive(t.Root, "", true)</span>
+}
+
+// Сохранение (JSON)
+func (t *CBT) SaveToFile(filename string) error <span class="cov8" title="1">{
+        data, _ := json.MarshalIndent(t, "", "    ")
+        return os.WriteFile(filename, data, 0644)
+}</span>
+
+// Загрузка (JSON)
+func (t *CBT) LoadFromFile(filename string) error <span class="cov8" title="1">{
+        data, err := os.ReadFile(filename)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">return json.Unmarshal(data, t)</span>
+}
+func (t *CBT) SaveToBinary(filename string) error <span class="cov8" title="1">{
+        file, _ := os.Create(filename)
+        defer file.Close()
+        encoder := gob.NewEncoder(file)
+        return encoder.Encode(t)
+}</span>
+
+func (t *CBT) LoadFromBinary(filename string) error <span class="cov8" title="1">{
+        file, err := os.Open(filename)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">defer file.Close()
+        decoder := gob.NewDecoder(file)
+        return decoder.Decode(t)</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package main
+
+import (
+        "encoding/gob"
+        "encoding/json"
+        "fmt"
+        "os"
+)
+
+const SIZE = 10
+const MAX_KICKS = 20
+
+type CuckooHashTable struct {
+        Keys1 [SIZE]string `json:"keys1"`
+        Vals1 [SIZE]string `json:"vals1"`
+        Keys2 [SIZE]string `json:"keys2"`
+        Vals2 [SIZE]string `json:"vals2"`
+}
+
+// Конструктор
+func NewCuckooHashTable() *CuckooHashTable <span class="cov8" title="1">{
+        return &amp;CuckooHashTable{}
+}</span>
+
+// Первая хеш-функция
+func (c *CuckooHashTable) hash1(key string) int <span class="cov8" title="1">{
+        sum := 0
+        for _, ch := range key </span><span class="cov8" title="1">{
+                sum += int(ch)
+        }</span>
+        <span class="cov8" title="1">return sum % SIZE</span>
+}
+
+// Вторая хеш-функция
+func (c *CuckooHashTable) hash2(key string) int <span class="cov8" title="1">{
+        sum := 0
+        for _, ch := range key </span><span class="cov8" title="1">{
+                sum += int(ch) * 7
+        }</span>
+        <span class="cov8" title="1">return sum % SIZE</span>
+}
+
+// Вставка (с выбиванием)
+func (c *CuckooHashTable) Insert(key, value string) bool <span class="cov8" title="1">{
+        // Если ключ уже есть в первой таблице — обновляем
+        if c.Keys1[c.hash1(key)] == key </span><span class="cov0" title="0">{
+                c.Vals1[c.hash1(key)] = value
+                return true
+        }</span>
+        // Если во второй — обновляем
+        <span class="cov8" title="1">if c.Keys2[c.hash2(key)] == key </span><span class="cov8" title="1">{
+                c.Vals2[c.hash2(key)] = value
+                return true
+        }</span>
+
+        <span class="cov8" title="1">curKey, curVal := key, value
+        for i := 0; i &lt; MAX_KICKS; i++ </span><span class="cov8" title="1">{
+                // Пробуем вставить в таблицу 1
+                pos1 := c.hash1(curKey)
+                if c.Keys1[pos1] == "" </span><span class="cov8" title="1">{
+                        c.Keys1[pos1], c.Vals1[pos1] = curKey, curVal
+                        return true
+                }</span>
+                // Место занято — выбиваем
+                <span class="cov8" title="1">curKey, c.Keys1[pos1] = c.Keys1[pos1], curKey
+                curVal, c.Vals1[pos1] = c.Vals1[pos1], curVal
+
+                // Пробуем вставить в таблицу 2
+                pos2 := c.hash2(curKey)
+                if c.Keys2[pos2] == "" </span><span class="cov8" title="1">{
+                        c.Keys2[pos2], c.Vals2[pos2] = curKey, curVal
+                        return true
+                }</span>
+                // Место занято — выбиваем
+                <span class="cov0" title="0">curKey, c.Keys2[pos2] = c.Keys2[pos2], curKey
+                curVal, c.Vals2[pos2] = c.Vals2[pos2], curVal</span>
+        }
+        <span class="cov0" title="0">return false</span> // Переполнение
+}
+
+// Поиск по ключу
+func (c *CuckooHashTable) Get(key string) string <span class="cov8" title="1">{
+        pos1 := c.hash1(key)
+        if c.Keys1[pos1] == key </span><span class="cov0" title="0">{
+                return c.Vals1[pos1]
+        }</span>
+        <span class="cov8" title="1">pos2 := c.hash2(key)
+        if c.Keys2[pos2] == key </span><span class="cov8" title="1">{
+                return c.Vals2[pos2]
+        }</span>
+        <span class="cov8" title="1">return ""</span> // Не найдено
+}
+
+// Печать обеих таблиц
+func (c *CuckooHashTable) Print() <span class="cov8" title="1">{
+        fmt.Println("--- Cuckoo (Table 1) ---")
+        for i := 0; i &lt; SIZE; i++ </span><span class="cov8" title="1">{
+                if c.Keys1[i] != "" </span><span class="cov8" title="1">{
+                        fmt.Printf("[%d]: %s=%s\n", i, c.Keys1[i], c.Vals1[i])
+                }</span>
+        }
+        <span class="cov8" title="1">fmt.Println("--- Cuckoo (Table 2) ---")
+        for i := 0; i &lt; SIZE; i++ </span><span class="cov8" title="1">{
+                if c.Keys2[i] != "" </span><span class="cov8" title="1">{
+                        fmt.Printf("[%d]: %s=%s\n", i, c.Keys2[i], c.Vals2[i])
+                }</span>
+        }
+}
+
+// Сохранение (JSON)
+func (c *CuckooHashTable) SaveToFile(filename string) error <span class="cov8" title="1">{
+        data, _ := json.MarshalIndent(c, "", "    ")
+        return os.WriteFile(filename, data, 0644)
+}</span>
+
+// Загрузка (JSON)
+func (c *CuckooHashTable) LoadFromFile(filename string) error <span class="cov8" title="1">{
+        data, err := os.ReadFile(filename)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">return json.Unmarshal(data, c)</span>
+}
+
+func (c *CuckooHashTable) SaveToBinary(filename string) error <span class="cov8" title="1">{
+        file, _ := os.Create(filename)
+        defer file.Close()
+        encoder := gob.NewEncoder(file)
+        return encoder.Encode(c)
+}</span>
+
+func (c *CuckooHashTable) LoadFromBinary(filename string) error <span class="cov8" title="1">{
+        file, err := os.Open(filename)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">defer file.Close()
+        decoder := gob.NewDecoder(file)
+        return decoder.Decode(c)</span>
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package main
+
+import (
+        "encoding/gob"
+        "encoding/json"
+        "fmt"
+        "os"
+)
+
+type DNode struct {
+        Data string `json:"data"`
+        Prev *DNode `json:"prev"`
+        Next *DNode `json:"next"`
+}
+
+type DList struct {
+        Head *DNode `json:"head"`
+        Tail *DNode `json:"tail"`
+        Size int    `json:"size"`
+}
+
+func NewDList() *DList <span class="cov8" title="1">{ return &amp;DList{} }</span>
+
+func (l *DList) PushHead(val string) <span class="cov8" title="1">{
+        newNode := &amp;DNode{Data: val, Next: l.Head}
+        if l.Head != nil </span><span class="cov0" title="0">{
+                l.Head.Prev = newNode
+        }</span>
+        <span class="cov8" title="1">l.Head = newNode
+        if l.Tail == nil </span><span class="cov8" title="1">{
+                l.Tail = newNode
+        }</span>
+        <span class="cov8" title="1">l.Size++</span>
+}
+
+func (l *DList) PushTail(val string) <span class="cov8" title="1">{
+        newNode := &amp;DNode{Data: val, Prev: l.Tail}
+        if l.Tail != nil </span><span class="cov8" title="1">{
+                l.Tail.Next = newNode
+        }</span>
+        <span class="cov8" title="1">l.Tail = newNode
+        if l.Head == nil </span><span class="cov0" title="0">{
+                l.Head = newNode
+        }</span>
+        <span class="cov8" title="1">l.Size++</span>
+}
+
+// Вставить после
+func (l *DList) InsertAfter(target, val string) <span class="cov8" title="1">{
+        curr := l.Head
+        for curr != nil &amp;&amp; curr.Data != target </span><span class="cov0" title="0">{
+                curr = curr.Next
+        }</span>
+        <span class="cov8" title="1">if curr == nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov8" title="1">newNode := &amp;DNode{Data: val, Prev: curr, Next: curr.Next}
+        if curr.Next != nil </span><span class="cov8" title="1">{
+                curr.Next.Prev = newNode
+        }</span> else<span class="cov0" title="0"> {
+                l.Tail = newNode
+        }</span>
+        <span class="cov8" title="1">curr.Next = newNode
+        l.Size++</span>
+}
+
+// Вставить перед
+func (l *DList) InsertBefore(target, val string) <span class="cov8" title="1">{
+        curr := l.Head
+        for curr != nil &amp;&amp; curr.Data != target </span><span class="cov8" title="1">{
+                curr = curr.Next
+        }</span>
+        <span class="cov8" title="1">if curr == nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov8" title="1">newNode := &amp;DNode{Data: val, Prev: curr.Prev, Next: curr}
+        if curr.Prev != nil </span><span class="cov8" title="1">{
+                curr.Prev.Next = newNode
+        }</span> else<span class="cov0" title="0"> {
+                l.Head = newNode
+        }</span>
+        <span class="cov8" title="1">curr.Prev = newNode
+        l.Size++</span>
+}
+
+// Удалить после
+func (l *DList) PopAfter(target string) <span class="cov8" title="1">{
+        curr := l.Head
+        for curr != nil &amp;&amp; curr.Data != target </span><span class="cov8" title="1">{
+                curr = curr.Next
+        }</span>
+        <span class="cov8" title="1">if curr == nil || curr.Next == nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov8" title="1">toDelete := curr.Next
+        curr.Next = toDelete.Next
+        if toDelete.Next != nil </span><span class="cov8" title="1">{
+                toDelete.Next.Prev = curr
+        }</span> else<span class="cov0" title="0"> {
+                l.Tail = curr
+        }</span>
+        <span class="cov8" title="1">l.Size--</span>
+}
+
+// Удалить перед
+func (l *DList) PopBefore(target string) <span class="cov8" title="1">{
+        curr := l.Head
+        for curr != nil &amp;&amp; curr.Data != target </span><span class="cov8" title="1">{
+                curr = curr.Next
+        }</span>
+        <span class="cov8" title="1">if curr == nil || curr.Prev == nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov8" title="1">toDelete := curr.Prev
+        curr.Prev = toDelete.Prev
+        if toDelete.Prev != nil </span><span class="cov8" title="1">{
+                toDelete.Prev.Next = curr
+        }</span> else<span class="cov0" title="0"> {
+                l.Head = curr
+        }</span>
+        <span class="cov8" title="1">l.Size--</span>
+}
+
+func (l *DList) PopHead() <span class="cov8" title="1">{
+        if l.Head == nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov8" title="1">l.Head = l.Head.Next
+        if l.Head != nil </span><span class="cov8" title="1">{
+                l.Head.Prev = nil
+        }</span> else<span class="cov0" title="0"> {
+                l.Tail = nil
+        }</span>
+        <span class="cov8" title="1">l.Size--</span>
+}
+
+func (l *DList) PopTail() <span class="cov8" title="1">{
+        if l.Tail == nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov8" title="1">l.Tail = l.Tail.Prev
+        if l.Tail != nil </span><span class="cov8" title="1">{
+                l.Tail.Next = nil
+        }</span> else<span class="cov0" title="0"> {
+                l.Head = nil
+        }</span>
+        <span class="cov8" title="1">l.Size--</span>
+}
+
+func (l *DList) Find(val string) bool <span class="cov8" title="1">{
+        curr := l.Head
+        for curr != nil </span><span class="cov8" title="1">{
+                if curr.Data == val </span><span class="cov8" title="1">{
+                        return true
+                }</span>
+                <span class="cov8" title="1">curr = curr.Next</span>
+        }
+        <span class="cov8" title="1">return false</span>
+}
+
+func (l *DList) Get(index int) string <span class="cov8" title="1">{
+        if index &lt; 0 || index &gt;= l.Size </span><span class="cov0" title="0">{
+                return ""
+        }</span>
+        <span class="cov8" title="1">curr := l.Head
+        for i := 0; i &lt; index; i++ </span><span class="cov8" title="1">{
+                curr = curr.Next
+        }</span>
+        <span class="cov8" title="1">return curr.Data</span>
+}
+
+func (l *DList) Length() int <span class="cov8" title="1">{ return l.Size }</span>
+func (l *DList) Clear()      <span class="cov8" title="1">{ l.Head = nil; l.Tail = nil; l.Size = 0 }</span>
+
+func (l *DList) PrintForward() <span class="cov8" title="1">{
+        curr := l.Head
+        fmt.Print("[")
+        for curr != nil </span><span class="cov8" title="1">{
+                fmt.Print(curr.Data)
+                if curr.Next != nil </span><span class="cov8" title="1">{
+                        fmt.Print(" &lt;-&gt; ")
+                }</span>
+                <span class="cov8" title="1">curr = curr.Next</span>
+        }
+        <span class="cov8" title="1">fmt.Println("]")</span>
+}
+
+func (l *DList) PrintBackward() <span class="cov8" title="1">{
+        curr := l.Tail
+        fmt.Print("[")
+        for curr != nil </span><span class="cov8" title="1">{
+                fmt.Print(curr.Data)
+                if curr.Prev != nil </span><span class="cov8" title="1">{
+                        fmt.Print(" &lt;-&gt; ")
+                }</span>
+                <span class="cov8" title="1">curr = curr.Prev</span>
+        }
+        <span class="cov8" title="1">fmt.Println("]")</span>
+}
+
+func (l *DList) SaveToFile(filename string) error <span class="cov8" title="1">{
+        data, _ := json.MarshalIndent(l, "", "    ")
+        return os.WriteFile(filename, data, 0644)
+}</span>
+
+func (l *DList) LoadFromFile(filename string) error <span class="cov8" title="1">{
+        data, err := os.ReadFile(filename)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">return json.Unmarshal(data, l)</span>
+}
+
+// Бинарное сохранение (Gob)
+func (l *DList) SaveToBinary(filename string) error <span class="cov8" title="1">{
+        file, _ := os.Create(filename)
+        defer file.Close()
+        encoder := gob.NewEncoder(file)
+        return encoder.Encode(l)
+}</span>
+
+// Бинарная загрузка (Gob)
+func (l *DList) LoadFromBinary(filename string) error <span class="cov8" title="1">{
+        file, err := os.Open(filename)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">defer file.Close()
+        decoder := gob.NewDecoder(file)
+        return decoder.Decode(l)</span>
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package main
+
+import (
+        "encoding/gob"
+        "encoding/json"
+        "fmt"
+        "os"
+        "strings"
+)
+
+type HashTable struct {
+        Table [10][]string `json:"table"`
+}
+
+// Конструктор
+func NewHashTable() *HashTable <span class="cov8" title="1">{
+        ht := &amp;HashTable{}
+        for i := range ht.Table </span><span class="cov8" title="1">{
+                ht.Table[i] = []string{}
+        }</span>
+        <span class="cov8" title="1">return ht</span>
+}
+
+// Хеш-функция
+func (h *HashTable) hash(key string) int <span class="cov8" title="1">{
+        sum := 0
+        for _, c := range key </span><span class="cov8" title="1">{
+                sum += int(c)
+        }</span>
+        <span class="cov8" title="1">return sum % 10</span>
+}
+
+// Вставка / Обновление
+func (h *HashTable) Insert(key, value string) <span class="cov8" title="1">{
+        idx := h.hash(key)
+        entry := key + ":" + value
+
+        // Проверяем, есть ли уже такой ключ (обновление)
+        for i, item := range h.Table[idx] </span><span class="cov8" title="1">{
+                if strings.HasPrefix(item, key+":") </span><span class="cov8" title="1">{
+                        h.Table[idx][i] = entry
+                        return
+                }</span>
+        }
+        // Если нет — добавляем
+        <span class="cov8" title="1">h.Table[idx] = append(h.Table[idx], entry)</span>
+}
+
+// Получить значение по ключу
+func (h *HashTable) Get(key string) string <span class="cov8" title="1">{
+        idx := h.hash(key)
+        for _, item := range h.Table[idx] </span><span class="cov8" title="1">{
+                if strings.HasPrefix(item, key+":") </span><span class="cov8" title="1">{
+                        return strings.TrimPrefix(item, key+":")
+                }</span>
+        }
+        <span class="cov8" title="1">return ""</span>
+}
+
+// Удалить по ключу
+func (h *HashTable) Remove(key string) <span class="cov8" title="1">{
+        idx := h.hash(key)
+        for i, item := range h.Table[idx] </span><span class="cov8" title="1">{
+                if strings.HasPrefix(item, key+":") </span><span class="cov8" title="1">{
+                        // Удаляем элемент из среза
+                        h.Table[idx] = append(h.Table[idx][:i], h.Table[idx][i+1:]...)
+                        return
+                }</span>
+        }
+}
+
+// Печать таблицы
+func (h *HashTable) Print() <span class="cov8" title="1">{
+        fmt.Println("--- HashTable ---")
+        for i, bucket := range h.Table </span><span class="cov8" title="1">{
+                fmt.Printf("[%d]: %v\n", i, bucket)
+        }</span>
+}
+
+// Сохранение (JSON)
+func (h *HashTable) SaveToFile(filename string) error <span class="cov8" title="1">{
+        data, _ := json.MarshalIndent(h, "", "    ")
+        return os.WriteFile(filename, data, 0644)
+}</span>
+
+// Загрузка (JSON)
+func (h *HashTable) LoadFromFile(filename string) error <span class="cov8" title="1">{
+        data, err := os.ReadFile(filename)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">return json.Unmarshal(data, h)</span>
+}
+
+func (h *HashTable) SaveToBinary(filename string) error <span class="cov8" title="1">{
+        file, _ := os.Create(filename)
+        defer file.Close()
+        encoder := gob.NewEncoder(file)
+        return encoder.Encode(h)
+}</span>
+
+func (h *HashTable) LoadFromBinary(filename string) error <span class="cov8" title="1">{
+        file, err := os.Open(filename)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">defer file.Close()
+        decoder := gob.NewDecoder(file)
+        return decoder.Decode(h)</span>
+}
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package main
+
+import (
+        "flag"
+        "fmt"
+        "os"
+        "strings"
+)
+
+func RunCLI(args []string) <span class="cov8" title="1">{
+        fs := flag.NewFlagSet("lab3", flag.ExitOnError)
+        filePtr := fs.String("file", "", "Путь к файлу данных")
+        queryPtr := fs.String("query", "", "Команда")
+        fs.Parse(args)
+
+        if *filePtr == "" || *queryPtr == "" </span><span class="cov8" title="1">{
+                fmt.Println("Использование: go run . --file data.json --query 'MPUSH Apple'")
+                return
+        }</span>
+
+        <span class="cov8" title="1">parts := strings.Fields(*queryPtr)
+        if len(parts) == 0 </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov8" title="1">cmd := parts[0]
+
+        switch cmd </span>{
+        case "MPUSH":<span class="cov8" title="1">
+                if len(parts) &lt; 2 </span><span class="cov8" title="1">{
+                        return
+                }</span>
+                <span class="cov0" title="0">arr := NewArray()
+                arr.LoadFromFile(*filePtr)
+                arr.PushBack(parts[1])
+                arr.SaveToFile(*filePtr)
+                fmt.Println("Добавлено:", parts[1])</span>
+        case "MINSERT":<span class="cov8" title="1">
+                if len(parts) &lt; 2 </span><span class="cov8" title="1">{
+                        return
+                }</span>
+                <span class="cov0" title="0">arr := NewArray()
+                arr.LoadFromFile(*filePtr)
+                arr.InsertAt(1, parts[1])
+                arr.SaveToFile(*filePtr)</span>
+        case "MREMOVE":<span class="cov8" title="1">
+                if len(parts) &lt; 2 </span><span class="cov8" title="1">{
+                        return
+                }</span> // ЗАЩИТА
+                <span class="cov0" title="0">arr := NewArray()
+                arr.LoadFromFile(*filePtr)
+                arr.RemoveAt(0)
+                arr.SaveToFile(*filePtr)</span>
+        case "MPRINT":<span class="cov8" title="1">
+                arr := NewArray()
+                arr.LoadFromFile(*filePtr)
+                arr.Print()</span>
+
+        case "FPUSH":<span class="cov8" title="1">
+                if len(parts) &lt; 2 </span><span class="cov8" title="1">{
+                        return
+                }</span>
+                <span class="cov0" title="0">l := NewSList()
+                l.LoadFromFile(*filePtr)
+                l.PushTail(parts[1])
+                l.SaveToFile(*filePtr)</span>
+        case "FPOP":<span class="cov8" title="1">
+                l := NewSList()
+                l.LoadFromFile(*filePtr)
+                l.PopHead()
+                l.SaveToFile(*filePtr)</span>
+        case "FPRINT":<span class="cov8" title="1">
+                l := NewSList()
+                l.LoadFromFile(*filePtr)
+                l.Print()</span>
+
+        case "SPUSH":<span class="cov8" title="1">
+                if len(parts) &lt; 2 </span><span class="cov8" title="1">{
+                        return
+                }</span>
+                <span class="cov0" title="0">s := NewStack()
+                s.LoadFromFile(*filePtr)
+                s.Push(parts[1])
+                s.SaveToFile(*filePtr)</span>
+        case "SPOP":<span class="cov8" title="1">
+                s := NewStack()
+                s.LoadFromFile(*filePtr)
+                fmt.Println("Извлечено из стека:", s.Pop())
+                s.SaveToFile(*filePtr)</span>
+        case "STOP":<span class="cov8" title="1">
+                s := NewStack()
+                s.LoadFromFile(*filePtr)
+                fmt.Println("Вершина:", s.Top())</span>
+        case "SPRINT":<span class="cov8" title="1">
+                s := NewStack()
+                s.LoadFromFile(*filePtr)
+                s.Print()</span>
+
+        case "QPUSH":<span class="cov8" title="1">
+                if len(parts) &lt; 2 </span><span class="cov8" title="1">{
+                        return
+                }</span>
+                <span class="cov0" title="0">q := NewQueue()
+                q.LoadFromFile(*filePtr)
+                q.Push(parts[1])
+                q.SaveToFile(*filePtr)</span>
+        case "QPOP":<span class="cov8" title="1">
+                q := NewQueue()
+                q.LoadFromFile(*filePtr)
+                fmt.Println("Извлечено из очереди:", q.Pop())
+                q.SaveToFile(*filePtr)</span>
+        case "QFRONT":<span class="cov8" title="1">
+                q := NewQueue()
+                q.LoadFromFile(*filePtr)
+                fmt.Println("Начало очереди:", q.Front())</span>
+        case "QPRINT":<span class="cov8" title="1">
+                q := NewQueue()
+                q.LoadFromFile(*filePtr)
+                q.Print()</span>
+
+        case "TINSERT":<span class="cov8" title="1">
+                if len(parts) &lt; 2 </span><span class="cov8" title="1">{
+                        return
+                }</span>
+                <span class="cov0" title="0">t := NewCBT()
+                t.LoadFromFile(*filePtr)
+                t.Insert(parts[1])
+                t.SaveToFile(*filePtr)</span>
+        case "TCHECK":<span class="cov8" title="1">
+                t := NewCBT()
+                t.LoadFromFile(*filePtr)
+                fmt.Println("Complete:", t.IsComplete())</span>
+        case "TPRINT":<span class="cov8" title="1">
+                t := NewCBT()
+                t.LoadFromFile(*filePtr)
+                t.Print()</span>
+
+        case "HSET":<span class="cov8" title="1">
+                if len(parts) &lt; 3 </span><span class="cov8" title="1">{
+                        return
+                }</span>
+                <span class="cov0" title="0">h := NewHashTable()
+                h.LoadFromFile(*filePtr)
+                h.Insert(parts[1], parts[2])
+                h.SaveToFile(*filePtr)</span>
+        case "HGET":<span class="cov8" title="1">
+                if len(parts) &lt; 2 </span><span class="cov8" title="1">{
+                        return
+                }</span>
+                <span class="cov0" title="0">h := NewHashTable()
+                h.LoadFromFile(*filePtr)
+                fmt.Println(h.Get(parts[1]))</span>
+        case "HDEL":<span class="cov8" title="1">
+                if len(parts) &lt; 2 </span><span class="cov8" title="1">{
+                        return
+                }</span> // ЗАЩИТА
+                <span class="cov0" title="0">h := NewHashTable()
+                h.LoadFromFile(*filePtr)
+                h.Remove(parts[1])
+                h.SaveToFile(*filePtr)</span>
+        case "HPRINT":<span class="cov8" title="1">
+                h := NewHashTable()
+                h.LoadFromFile(*filePtr)
+                h.Print()</span>
+
+        case "CSET":<span class="cov8" title="1">
+                if len(parts) &lt; 3 </span><span class="cov8" title="1">{
+                        return
+                }</span>
+                <span class="cov0" title="0">c := NewCuckooHashTable()
+                c.LoadFromFile(*filePtr)
+                c.Insert(parts[1], parts[2])
+                c.SaveToFile(*filePtr)</span>
+        case "CGET":<span class="cov8" title="1">
+                if len(parts) &lt; 2 </span><span class="cov8" title="1">{
+                        return
+                }</span>
+                <span class="cov0" title="0">c := NewCuckooHashTable()
+                c.LoadFromFile(*filePtr)
+                fmt.Println(c.Get(parts[1]))</span>
+        case "CPRINT":<span class="cov8" title="1">
+                c := NewCuckooHashTable()
+                c.LoadFromFile(*filePtr)
+                c.Print()</span>
+
+        default:<span class="cov8" title="1">
+                fmt.Println("Неизвестная команда")</span>
+        }
+
+        <span class="cov8" title="1">_ = func() </span><span class="cov0" title="0">{
+                if false </span><span class="cov0" title="0">{
+                        fmt.Println("Недостижимый код для покрытия")
+                }</span>
+        }
+}
+
+func main() <span class="cov0" title="0">{
+        RunCLI(os.Args[1:])
+}</span>
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package main
+
+import (
+        "encoding/gob"
+        "encoding/json"
+        "fmt"
+        "os"
+)
+
+type Queue struct {
+        Items []string `json:"items"`
+}
+
+// Конструктор
+func NewQueue() *Queue <span class="cov8" title="1">{
+        return &amp;Queue{Items: []string{}}
+}</span>
+
+// Добавить в конец
+func (q *Queue) Push(val string) <span class="cov8" title="1">{
+        q.Items = append(q.Items, val)
+}</span>
+
+// Извлечь из начала
+func (q *Queue) Pop() string <span class="cov8" title="1">{
+        if len(q.Items) == 0 </span><span class="cov8" title="1">{
+                return ""
+        }</span>
+        <span class="cov8" title="1">val := q.Items[0]
+        q.Items = q.Items[1:] // Сдвигаем срез
+        return val</span>
+}
+
+// Посмотреть начало
+func (q *Queue) Front() string <span class="cov8" title="1">{
+        if len(q.Items) == 0 </span><span class="cov8" title="1">{
+                return ""
+        }</span>
+        <span class="cov8" title="1">return q.Items[0]</span>
+}
+
+// Проверить на пустоту
+func (q *Queue) IsEmpty() bool <span class="cov8" title="1">{
+        return len(q.Items) == 0
+}</span>
+
+// Получить размер
+func (q *Queue) GetSize() int <span class="cov8" title="1">{
+        return len(q.Items)
+}</span>
+
+// Очистить
+func (q *Queue) Clear() <span class="cov8" title="1">{
+        q.Items = []string{}
+}</span>
+
+// Печать (от начала к концу)
+func (q *Queue) Print() <span class="cov8" title="1">{
+        fmt.Println(q.Items)
+}</span>
+
+// Сохранение (JSON)
+func (q *Queue) SaveToFile(filename string) error <span class="cov8" title="1">{
+        data, _ := json.MarshalIndent(q, "", "    ")
+        return os.WriteFile(filename, data, 0644)
+}</span>
+
+// Загрузка (JSON)
+func (q *Queue) LoadFromFile(filename string) error <span class="cov8" title="1">{
+        data, err := os.ReadFile(filename)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">return json.Unmarshal(data, q)</span>
+}
+
+func (q *Queue) SaveToBinary(filename string) error <span class="cov8" title="1">{
+        file, _ := os.Create(filename)
+        defer file.Close()
+        encoder := gob.NewEncoder(file)
+        return encoder.Encode(q)
+}</span>
+
+func (q *Queue) LoadFromBinary(filename string) error <span class="cov8" title="1">{
+        file, err := os.Open(filename)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">defer file.Close()
+        decoder := gob.NewDecoder(file)
+        return decoder.Decode(q)</span>
+}
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package main
+
+import (
+        "encoding/gob"
+        "encoding/json"
+        "fmt"
+        "os"
+)
+
+type SNode struct {
+        Data string `json:"data"`
+        Next *SNode `json:"next"`
+}
+
+type SList struct {
+        Head *SNode `json:"head"`
+        Size int    `json:"size"`
+}
+
+func NewSList() *SList <span class="cov8" title="1">{ return &amp;SList{} }</span>
+
+func (l *SList) PushHead(val string) <span class="cov8" title="1">{
+        l.Head = &amp;SNode{Data: val, Next: l.Head}
+        l.Size++
+}</span>
+
+func (l *SList) PushTail(val string) <span class="cov8" title="1">{
+        newNode := &amp;SNode{Data: val}
+        if l.Head == nil </span><span class="cov0" title="0">{
+                l.Head = newNode
+        }</span> else<span class="cov8" title="1"> {
+                curr := l.Head
+                for curr.Next != nil </span><span class="cov8" title="1">{
+                        curr = curr.Next
+                }</span>
+                <span class="cov8" title="1">curr.Next = newNode</span>
+        }
+        <span class="cov8" title="1">l.Size++</span>
+}
+
+func (l *SList) PopHead() <span class="cov8" title="1">{
+        if l.Head == nil </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">l.Head = l.Head.Next
+        l.Size--</span>
+}
+
+func (l *SList) PopTail() <span class="cov8" title="1">{
+        if l.Head == nil </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">if l.Head.Next == nil </span><span class="cov0" title="0">{
+                l.Head = nil
+                l.Size--
+                return
+        }</span>
+        <span class="cov8" title="1">curr := l.Head
+        for curr.Next.Next != nil </span><span class="cov8" title="1">{
+                curr = curr.Next
+        }</span>
+        <span class="cov8" title="1">curr.Next = nil
+        l.Size--</span>
+}
+
+// Вставить после узла target
+func (l *SList) InsertAfter(target, val string) <span class="cov8" title="1">{
+        curr := l.Head
+        for curr != nil &amp;&amp; curr.Data != target </span><span class="cov8" title="1">{
+                curr = curr.Next
+        }</span>
+        <span class="cov8" title="1">if curr == nil </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">newNode := &amp;SNode{Data: val, Next: curr.Next}
+        curr.Next = newNode
+        l.Size++</span>
+}
+
+// Вставить перед узлом target
+func (l *SList) InsertBefore(target, val string) <span class="cov8" title="1">{
+        if l.Head == nil </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">if l.Head.Data == target </span><span class="cov8" title="1">{
+                l.PushHead(val)
+                return
+        }</span>
+        <span class="cov8" title="1">curr := l.Head
+        for curr.Next != nil &amp;&amp; curr.Next.Data != target </span><span class="cov8" title="1">{
+                curr = curr.Next
+        }</span>
+        <span class="cov8" title="1">if curr.Next == nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov8" title="1">newNode := &amp;SNode{Data: val, Next: curr.Next}
+        curr.Next = newNode
+        l.Size++</span>
+}
+
+// Удалить ПОСЛЕ узла target
+func (l *SList) PopAfter(target string) <span class="cov8" title="1">{
+        curr := l.Head
+        for curr != nil &amp;&amp; curr.Data != target </span><span class="cov8" title="1">{
+                curr = curr.Next
+        }</span>
+        <span class="cov8" title="1">if curr == nil || curr.Next == nil </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">curr.Next = curr.Next.Next
+        l.Size--</span>
+}
+
+// Удалить ПЕРЕД узлом target
+func (l *SList) PopBefore(target string) <span class="cov8" title="1">{
+        if l.Head == nil || l.Head.Data == target </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">if l.Head.Next != nil &amp;&amp; l.Head.Next.Data == target </span><span class="cov0" title="0">{
+                l.PopHead()
+                return
+        }</span>
+        <span class="cov8" title="1">curr := l.Head
+        for curr.Next != nil &amp;&amp; curr.Next.Next != nil &amp;&amp; curr.Next.Next.Data != target </span><span class="cov8" title="1">{
+                curr = curr.Next
+        }</span>
+        <span class="cov8" title="1">if curr.Next == nil || curr.Next.Next == nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov8" title="1">curr.Next = curr.Next.Next
+        l.Size--</span>
+}
+
+func (l *SList) Find(val string) bool <span class="cov8" title="1">{
+        curr := l.Head
+        for curr != nil </span><span class="cov8" title="1">{
+                if curr.Data == val </span><span class="cov8" title="1">{
+                        return true
+                }</span>
+                <span class="cov8" title="1">curr = curr.Next</span>
+        }
+        <span class="cov8" title="1">return false</span>
+}
+
+func (l *SList) Get(index int) string <span class="cov8" title="1">{
+        if index &lt; 0 || index &gt;= l.Size </span><span class="cov8" title="1">{
+                return ""
+        }</span>
+        <span class="cov8" title="1">curr := l.Head
+        for i := 0; i &lt; index; i++ </span><span class="cov8" title="1">{
+                curr = curr.Next
+        }</span>
+        <span class="cov8" title="1">return curr.Data</span>
+}
+
+func (l *SList) Length() int <span class="cov8" title="1">{ return l.Size }</span>
+func (l *SList) Clear()      <span class="cov8" title="1">{ l.Head = nil; l.Size = 0 }</span>
+
+func (l *SList) Print() <span class="cov8" title="1">{
+        curr := l.Head
+        fmt.Print("[")
+        for curr != nil </span><span class="cov8" title="1">{
+                fmt.Print(curr.Data)
+                if curr.Next != nil </span><span class="cov8" title="1">{
+                        fmt.Print(" -&gt; ")
+                }</span>
+                <span class="cov8" title="1">curr = curr.Next</span>
+        }
+        <span class="cov8" title="1">fmt.Println("]")</span>
+}
+
+func (l *SList) SaveToFile(filename string) error <span class="cov8" title="1">{
+        data, _ := json.MarshalIndent(l, "", "    ")
+        return os.WriteFile(filename, data, 0644)
+}</span>
+
+func (l *SList) LoadFromFile(filename string) error <span class="cov8" title="1">{
+        data, err := os.ReadFile(filename)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">return json.Unmarshal(data, l)</span>
+
+}
+
+func (l *SList) SaveToBinary(filename string) error <span class="cov8" title="1">{
+        file, _ := os.Create(filename)
+        defer file.Close()
+        encoder := gob.NewEncoder(file)
+        return encoder.Encode(l)
+}</span>
+
+func (l *SList) LoadFromBinary(filename string) error <span class="cov8" title="1">{
+        file, err := os.Open(filename)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">defer file.Close()
+        decoder := gob.NewDecoder(file)
+        return decoder.Decode(l)</span>
+}
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package main
+
+import (
+        "encoding/gob"
+        "encoding/json"
+        "fmt"
+        "os"
+)
+
+type Stack struct {
+        Items []string `json:"items"`
+}
+
+// Конструктор
+func NewStack() *Stack <span class="cov8" title="1">{
+        return &amp;Stack{Items: []string{}}
+}</span>
+
+// Добавить на вершину
+func (s *Stack) Push(val string) <span class="cov8" title="1">{
+        s.Items = append(s.Items, val)
+}</span>
+
+// Снять с вершины (и вернуть)
+func (s *Stack) Pop() string <span class="cov8" title="1">{
+        if len(s.Items) == 0 </span><span class="cov8" title="1">{
+                return ""
+        }</span>
+        <span class="cov8" title="1">val := s.Items[len(s.Items)-1]
+        s.Items = s.Items[:len(s.Items)-1]
+        return val</span>
+}
+
+// Посмотреть вершину
+func (s *Stack) Top() string <span class="cov8" title="1">{
+        if len(s.Items) == 0 </span><span class="cov8" title="1">{
+                return ""
+        }</span>
+        <span class="cov8" title="1">return s.Items[len(s.Items)-1]</span>
+}
+
+// Проверить на пустоту
+func (s *Stack) IsEmpty() bool <span class="cov8" title="1">{
+        return len(s.Items) == 0
+}</span>
+
+// Получить размер
+func (s *Stack) GetSize() int <span class="cov8" title="1">{
+        return len(s.Items)
+}</span>
+
+// Очистить
+func (s *Stack) Clear() <span class="cov8" title="1">{
+        s.Items = []string{}
+}</span>
+
+// Печать (сверху вниз)
+func (s *Stack) Print() <span class="cov8" title="1">{
+        // Печатаем в обратном порядке, так как вершина в конце среза
+        fmt.Print("[")
+        for i := len(s.Items) - 1; i &gt;= 0; i-- </span><span class="cov8" title="1">{
+                fmt.Print(s.Items[i])
+                if i &gt; 0 </span><span class="cov8" title="1">{
+                        fmt.Print(", ")
+                }</span>
+        }
+        <span class="cov8" title="1">fmt.Println("]")</span>
+}
+
+// Сохранение (JSON)
+func (s *Stack) SaveToFile(filename string) error <span class="cov8" title="1">{
+        data, _ := json.MarshalIndent(s, "", "    ")
+        return os.WriteFile(filename, data, 0644)
+}</span>
+
+// Загрузка (JSON)
+func (s *Stack) LoadFromFile(filename string) error <span class="cov8" title="1">{
+        data, err := os.ReadFile(filename)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">return json.Unmarshal(data, s)</span>
+}
+
+func (s *Stack) SaveToBinary(filename string) error <span class="cov8" title="1">{
+        file, _ := os.Create(filename)
+        defer file.Close()
+        encoder := gob.NewEncoder(file)
+        return encoder.Encode(s)
+}</span>
+
+func (s *Stack) LoadFromBinary(filename string) error <span class="cov8" title="1">{
+        file, err := os.Open(filename)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">defer file.Close()
+        decoder := gob.NewDecoder(file)
+        return decoder.Decode(s)</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
